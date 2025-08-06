@@ -1,37 +1,34 @@
-package com.school;
-
+package com.school; 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Welcome to the School Attendance System Project!");
-        System.out.println("Session 1: Project Setup and Orientation Complete.");
+        System.out.println("==== School Attendance System ====");
 
-        System.out.println("---School Attendance System---");
+        System.out.println("Creating Students and Courses using Constructors:");
+        Student student1 = new Student("Alice Wonderland");
+        Student student2 = new Student("Bob The Builder");
 
-        Student[] students = new Student[2];
-        
-        students[0] = new Student();
-        students[0].setDetails(1, "Aryaman");
-        
-        students[1] = new Student();
-        students[1].setDetails(2, "Aryaman Panwar");
-        
-        Course[] courses = new Course[2];
+        Course course1 = new Course("Intro to Programming");
+        Course course2 = new Course("Linear Algebra");
 
-        courses[0] = new Course();
-        courses[0].setDetails("401", "OOPs");
+        System.out.println("\nRegistered Students:");
+        student1.displayDetails();
+        student2.displayDetails();
 
-        courses[1] = new Course();
-        courses[1].setDetails("402", "DSA");
+        System.out.println("\nAvailable Courses:");
+        course1.displayDetails();
+        course2.displayDetails();
 
-        System.out.println("\nRegistered Students");
-        for (Student student : students) {
-            if(student !=null) student.displayDetails();
-        }
+        System.out.println("\n== Auto-ID Generation Test ==");
+        System.out.println("Creating one more student and course...");
+        Student student3 = new Student("Charlie Chaplin");
+        Course course3 = new Course("Data Structures");
 
-        System.out.println("\nAvailable Courses");
-        for (Course course : courses) {
-            if(course !=null) course.displayDetails();
-        }
-        System.out.println("\nSession 2: Core Domain Modelling Complete.");
+        System.out.println("\nNew Student:");
+        student3.displayDetails();
+
+        System.out.println("New Course:");
+        course3.displayDetails();
+
+        System.out.println("\nSession 3: Constructor Initialization & Auto-ID Generation Complete.");
     }
 }
