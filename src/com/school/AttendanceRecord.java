@@ -1,43 +1,42 @@
 package com.school;
 
 public class AttendanceRecord implements Storable {
-    private int studentId;
-    private int courseId;
-    private String status; // e.g., "Present", "Absent"
+  private Student student;
+  private Course course;
+  private String status;
 
-    public AttendanceRecord(int studentId, int courseId, String status) {
-        this.studentId = studentId;
-        this.courseId = courseId;
-        // Basic validation for status
-        if ("Present".equalsIgnoreCase(status) || "Absent".equalsIgnoreCase(status)) {
-            this.status = status;
-        } else {
-            this.status = "Invalid"; // Default for invalid input
-            System.out.println("Warning: Invalid attendance status provided. Set to 'Invalid'.");
-        }
-    }
+  // Constructor
+  public AttendanceRecord(Student student, Course course, String status) {
+    this.student = student;
+    this.course = course;
 
-    // Getters
-    public int getStudentId() { 
-        return studentId; 
+    if ("Present".equalsIgnoreCase(status) || "Absent".equalsIgnoreCase(status)) {
+      this.status = status;
+    } else {
+      this.status = "Invalid";
+      System.out.println("Warning: Invalid status provided. Setting status to 'Invalid'.");
     }
+  }
 
-    public int getCourseId() { 
-        return courseId; 
-    }
+  public Student getStudent() {
+    return student;
+  }
 
-    public String getStatus() { 
-        return status; 
-    }
+  public Course getCourse() {
+    return course;
+  }
 
-    public void displayRecord() {
-        System.out.println("Attendance: Student ID " + studentId +
-                           " in Course ID C" + courseId + " - Status: " + status);
-    }
+  public String getStatus() {
+    return status;
+  }
 
-    @Override
-    public String toDataString() {
-        // Format: studentId,courseId,status
-        return studentId + "," + courseId + "," + status;
-    }
+  public void displayRecord() {
+    System.out.println("Attendance: " + student.getName() + " (ID: " + student.getId() + ") in " + 
+                      course.getCourseName() + " (Course ID: C" + course.getCourseId() + ") - Status: " + status);
+  }
+
+  @Override
+  public String toDataString() {
+    return student.getId() + "," + course.getCourseId() + "," + status;
+  }
 }
