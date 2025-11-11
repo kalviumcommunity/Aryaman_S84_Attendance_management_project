@@ -4,13 +4,11 @@ import java.util.List;
 
 public class Main {
 
-    // displaySchoolDirectory is now better placed in RegistrationService or a ReportService
-    // For now, let's make it use RegistrationService data
     public static void displaySchoolDirectory(RegistrationService regService) {
         System.out.println("\n--- School Directory ---");
         List<Person> people = regService.getAllPeople();
         if (people.isEmpty()) {
-            System.out.println("No people registered.");
+            System.out.println("No people in the directory.");
             return;
         }
         for (Person person : people) {
@@ -19,43 +17,75 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("--- School System (SRP Demo) ---");
+        System.out.println("--- School System (Registration Service Demo) ---");
 
         // --- Setup Services ---
         FileStorageService storageService = new FileStorageService();
         RegistrationService registrationService = new RegistrationService(storageService);
-        // AttendanceService now depends on RegistrationService
         AttendanceService attendanceService = new AttendanceService(storageService, registrationService);
 
-        // --- Registering Entities via RegistrationService ---
-        System.out.println("\n--- Registering People and Courses ---");
-        Student student1 = registrationService.registerStudent("Alice Wonderland", "Grade 10");
-        Student student2 = registrationService.registerStudent("Bob The Builder", "Grade 9");
+        // --- Data Setup: Register Students, Teachers, Staff, and Courses ---
+        registrationService.registerStudent("Alice Wonderland", "Grade 10");
+        registrationService.registerStudent("Bob The Builder", "Grade 9");
+        registrationService.registerStudent("Charlie Chaplin", "Grade 10");
+
         registrationService.registerTeacher("Dr. Emily Carter", "Physics");
-        registrationService.registerStaff("Mr. John Davis", "Librarian");
+        registrationService.registerTeacher("Prof. John Smith", "Mathematics");
 
-        Course course1 = registrationService.createCourse("Intro to Programming");
-        Course course2 = registrationService.createCourse("Data Structures");
+        registrationService.registerStaff("Jane Doe", "Librarian");
+        registrationService.registerStaff("Mike Johnson", "Administrator");
 
-        // Display directory using data from RegistrationService
+        registrationService.createCourse("Intro to Programming", 2);
+        registrationService.createCourse("Data Structures", 3);
+
+        // Display school directory using RegistrationService
         displaySchoolDirectory(registrationService);
 
-        System.out.println("\n\n--- Marking Attendance ---");
-        // Mark attendance using Student and Course objects
-        attendanceService.markAttendance(student1, course1, "Present");
-        // Mark attendance using studentId and courseId (lookup via RegistrationService)
-        attendanceService.markAttendance(student2.getId(), course1.getCourseId(), "Absent");
-        attendanceService.markAttendance(student1.getId(), course2.getCourseId(), "Tardy"); // Invalid
+        System.out.println("\n\n--- Course Enrollment ---");
+        // Get students and courses for enrollment
+        List<Student> students = registrationService.getStudents();
+        List<Course> courses = registrationService.getCourses();
+        
+        // Enroll students in courses
+        registrationService.enrollStudentInCourse(students.get(0), courses.get(0)); // Alice in Intro to Programming
+        registrationService.enrollStudentInCourse(students.get(1), courses.get(0)); // Bob in Intro to Programming
+        registrationService.enrollStudentInCourse(students.get(2), courses.get(0)); // Charlie in Intro to Programming (should fail - capacity exceeded)
+        
+        registrationService.enrollStudentInCourse(students.get(0), courses.get(1)); // Alice in Data Structures
+        registrationService.enrollStudentInCourse(students.get(2), courses.get(1)); // Charlie in Data Structures
+        
+        System.out.println("\n--- Course Details After Enrollment ---");
+        for (Course course : courses) {
+            course.displayDetails();
+        }
 
-        System.out.println("\n\n--- Querying Attendance ---");
-        attendanceService.displayAttendanceLog(student1); // Log for Alice
-        attendanceService.displayAttendanceLog();         // Full log
+        System.out.println("\n\n--- Marking Attendance (Overloaded Methods) ---");
+        // 1. Mark attendance using Student and Course objects (for enrolled students)
+        attendanceService.markAttendance(students.get(0), courses.get(0), "Present");
+        attendanceService.markAttendance(students.get(1), courses.get(0), "Absent");
 
-        // --- Saving Data via Services ---
+        // 2. Mark attendance using studentId and courseId (uses RegistrationService for lookup)
+        // Alice (ID 1) in Data Structures (ID C102)
+        attendanceService.markAttendance(students.get(0).getId(), courses.get(1).getCourseId(), "Present");
+        // Charlie (ID 3) in Data Structures (ID C102) - Charlie is enrolled in this course
+        attendanceService.markAttendance(students.get(2).getId(), courses.get(1).getCourseId(), "Late");
+
+
+        System.out.println("\n\n--- Querying Attendance (Overloaded Methods) ---");
+        // 1. Display full attendance log
+        attendanceService.displayAttendanceLog();
+
+        // 2. Display attendance for a specific student (Alice)
+        attendanceService.displayAttendanceLog(students.get(0));
+
+        // 3. Display attendance for a specific course (Intro to Programming)
+        attendanceService.displayAttendanceLog(courses.get(0));
+
+        // --- Saving All Data ---
         System.out.println("\n\n--- Saving All Data ---");
-        registrationService.saveAllRegistrations();
-        attendanceService.saveAttendanceData();
+        registrationService.saveAllRegistrations(); // Save students, teachers, staff, and courses
+        attendanceService.saveAttendanceData(); // Save attendance log
 
-        System.out.println("\nSession 9: SRP with Registration & Attendance Services Complete.");
+        System.out.println("\nPart 10: Course Capacity and Enrollment Complete.");
     }
 }
